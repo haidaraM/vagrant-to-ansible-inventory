@@ -69,9 +69,13 @@ def write_ansible_hosts(parsed_config, filename="hosts"):
             f.write(host_line_format)
 
 
-if __name__ == "__main__":
+def main():
     write_ssh_config(get_vagrant_ssh_config())
 
     config = parse_ssh_config()
 
     write_ansible_hosts(config)
+
+
+if __name__ == "__main__":
+    main()
