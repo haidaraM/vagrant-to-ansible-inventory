@@ -1,11 +1,17 @@
-# -*- coding: utf-8 -*-
 # !/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 """
-Simple script to transform 'vagrant ssh-config' output to an inventory hosts for Ansible
+Simple script to transform 'vagrant ssh-config' output to an inventory hosts for Ansible.
+
+This script must be run in your vagrant folder.
 """
 import subprocess
 import sys
 import os
+import argparse
+
+__version__ = "0.0.2"
 
 from storm.parsers.ssh_config_parser import ConfigParser
 
@@ -53,7 +59,7 @@ def parse_ssh_config(filename=DEFAULT_SSH_CONF):
     return parser.config_data
 
 
-def write_ansible_hosts(parsed_config, filename="hosts"):
+def write_ansible_hosts(parsed_config, filename):
     """
     Write ansible hosts
     :param filename:
@@ -69,13 +75,24 @@ def write_ansible_hosts(parsed_config, filename="hosts"):
             f.write(host_line_format)
 
 
-def main():
+def main(hosts_filename):
     write_ssh_config(get_vagrant_ssh_config())
 
     config = parse_ssh_config()
 
-    write_ansible_hosts(config)
+    write_ansible_hosts(config, hosts_filename)
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument("-v", "--version", dest="version", action="store_true", help="Print version and exits")
+
+    parser.add_argument("hosts_filename", nargs="?", default="hosts", help="The inventory file name to write hosts to.")
+
+    args = parser.parse_args()
+
+    if args.version:
+        print(__version__)
+    else:
+        main(args.hosts_filename)

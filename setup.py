@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+from vagranttoansible.vagranttoansible import __version__
 
 try:
     long_description = open('README.md').read()
@@ -6,7 +7,7 @@ except:
     long_description = None
 
 setup(name="vagranttoansible",
-      version="0.0.1",
+      version=__version__,
       description="Simple script to transform 'vagrant ssh-config' output to an inventory hosts for Ansible",
       url="https://github.com/haidaraM/vagranttoansibleinventory",
       author="HAIDARA Mohamed El Mouctar",
