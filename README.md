@@ -10,6 +10,8 @@ Inside your vagrant directory, run the script `./vagrant2ansible.py` or `python3
 a filed named `hosts` (Ansible inventory) in the current directory along with a file named `.vagrant-ssh-config` (the 
 output of  `vagrant ssh-config`).
 
+The script has been tested with **Vagrant 2.0** but it should work with earlier versions of Vagrant too.
+
 ## Installation
 
 `pip install vagranttoansible`
