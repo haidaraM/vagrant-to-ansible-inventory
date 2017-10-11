@@ -15,7 +15,7 @@ import os
 import argparse
 from storm.parsers.ssh_config_parser import ConfigParser
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
 DEFAULT_SSH_CONF = ".vagrant-ssh-config"
 DEFAULT_HOSTS_FILE = "hosts"
@@ -37,6 +37,10 @@ def get_vagrant_ssh_config():
         message = c.output.decode('utf-8')
         print(message, file=sys.stderr)
         exit(c.returncode)
+    except OSError as oe:
+        print("There was an error when executing the vagrant ssh-config. Verify that vagrant is correctly installed.",
+              file=sys.stderr)
+        exit(oe.errno)
 
 
 def write_ssh_config(ssh_config, filename=DEFAULT_SSH_CONF):
