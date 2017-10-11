@@ -6,6 +6,9 @@ Simple script to transform 'vagrant ssh-config' output to an inventory hosts for
 
 This script must be run in your vagrant folder.
 """
+
+from __future__ import print_function
+
 import subprocess
 import sys
 import os
@@ -24,15 +27,14 @@ def get_vagrant_ssh_config():
     :return:
     """
     try:
-        response = subprocess.run(['vagrant', 'ssh-config'], stdout=subprocess.PIPE, check=True,
-                                  stderr=subprocess.PIPE)
+        output = subprocess.check_output(['vagrant', 'ssh-config'], stderr=subprocess.STDOUT)
 
-        config_str = response.stdout.decode('utf-8')
+        config_str = output.decode('utf-8')
         # remove empty lines as they will be interpreted by the ConfigParser
         config_str = os.linesep.join([s for s in config_str.splitlines() if s])
         return config_str
     except subprocess.CalledProcessError as c:
-        message = c.stderr.decode('utf-8') if len(c.output) == 0 else c.output.decode('utf-8')
+        message = c.output.decode('utf-8')
         print(message, file=sys.stderr)
         exit(c.returncode)
 
