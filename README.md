@@ -51,7 +51,6 @@ machine2 ansible_host=127.0.0.1 ansible_user=vagrant ansible_ssh_common_args='-o
 ## TODO
 
  - Add some options
- - Compatibility with Python 2 (should be easy to do)
  - Maybe remove the stormssh dependency
  - Test with different Vagrant environments 
 
