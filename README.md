@@ -10,6 +10,10 @@ Inside your vagrant directory, run the script `./vagrant2ansible.py` or `python3
 a filed named `hosts` (Ansible inventory) in the current directory along with a file named `.vagrant-ssh-config` (the 
 output of  `vagrant ssh-config`).
 
+## Installation
+
+`pip install vagranttoansible`
+
 ## Example
 This configuration:
 ```yaml
@@ -33,7 +37,6 @@ Host machine2
   IdentityFile /home/mha-dw/Projets/ansible/.vagrant/machines/machine2/virtualbox/private_key
   IdentitiesOnly yes
   LogLevel FATAL
-Host machine3
 ```
 will be 
 ```ini
@@ -49,10 +52,9 @@ machine2 ansible_host=127.0.0.1 ansible_user=vagrant ansible_ssh_common_args='-o
  - Compatibility with Python 2 (should be easy to do)
  - Maybe remove the stormssh dependency
  - Test with different Vagrant environments 
- - Put on Pypi
 
 More options will be added. Feel free to contribute.
 
 ## Credits
 
-Mohamed El Mouctar HAIDARA
+Mohamed El Mouctar HAIDARA (elmhaidara@gmail.com)
