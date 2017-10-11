@@ -15,6 +15,7 @@ setup(name="vagranttoansible",
       license="MIT",
       install_requires=['stormssh'],
       packages=find_packages(exclude=['tests']),
+      download_url="https://github.com/haidaraM/vagranttoansibleinventory/archive/v" + __version__ + ".tar.gz",
       classifiers=[
           'Development Status :: 3 - Alpha',
           'Intended Audience :: Developers',
