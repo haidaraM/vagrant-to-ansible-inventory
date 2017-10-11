@@ -14,9 +14,15 @@ The script has been tested with **Vagrant 2.0** but it should work with earlier 
 
 ## Installation
 
-`pip install vagranttoansible`
+```bash
+pip install vagranttoansible
+```
 
 ## Example
+```bash
+vagranttoansible
+```
+
 This configuration:
 ```yaml
 Host machine1
