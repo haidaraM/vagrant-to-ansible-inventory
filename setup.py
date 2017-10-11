@@ -23,6 +23,6 @@ setup(name="vagranttoansible",
       ],
       entry_points={
           'console_scripts': [
-              'vagranttoansible = vagranttoansible.vagranttoansible:main'
+              'vagranttoansible = vagranttoansible.vagranttoansible:cli'
           ]
       })

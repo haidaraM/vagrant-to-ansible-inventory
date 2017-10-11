@@ -10,12 +10,12 @@ import subprocess
 import sys
 import os
 import argparse
-
-__version__ = "0.0.2"
-
 from storm.parsers.ssh_config_parser import ConfigParser
 
+__version__ = "0.0.1"
+
 DEFAULT_SSH_CONF = ".vagrant-ssh-config"
+DEFAULT_HOSTS_FILE = "hosts"
 
 
 def get_vagrant_ssh_config():
@@ -50,9 +50,10 @@ def write_ssh_config(ssh_config, filename=DEFAULT_SSH_CONF):
 
 def parse_ssh_config(filename=DEFAULT_SSH_CONF):
     """
-    Parse the ssh config and return it
+    Parse the ssh config and return it as list of hosts (dict)
     :param filename:
-    :return:
+    :return: the ssh conf parsed
+
     """
     parser = ConfigParser(ssh_config_file=filename)
     parser.load()
@@ -83,12 +84,13 @@ def main(hosts_filename):
     write_ansible_hosts(config, hosts_filename)
 
 
-if __name__ == "__main__":
+def cli():
     parser = argparse.ArgumentParser(description=__doc__)
 
     parser.add_argument("-v", "--version", dest="version", action="store_true", help="Print version and exits")
 
-    parser.add_argument("hosts_filename", nargs="?", default="hosts", help="The inventory file name to write hosts to.")
+    parser.add_argument("hosts_filename", nargs="?", default=DEFAULT_HOSTS_FILE,
+                        help="The inventory file name to write hosts to.")
 
     args = parser.parse_args()
 
@@ -96,3 +98,7 @@ if __name__ == "__main__":
         print(__version__)
     else:
         main(args.hosts_filename)
+
+
+if __name__ == "__main__":
+    cli()
