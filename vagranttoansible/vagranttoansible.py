@@ -20,6 +20,10 @@ __version__ = "0.0.2"
 DEFAULT_SSH_CONF = ".vagrant-ssh-config"
 DEFAULT_HOSTS_FILE = "hosts"
 
+red_color = "\033[91m"
+green_color = "\033[92m"
+end_color = "\033[0m"
+
 
 def get_vagrant_ssh_config():
     """
@@ -35,11 +39,13 @@ def get_vagrant_ssh_config():
         return config_str
     except subprocess.CalledProcessError as c:
         message = c.output.decode('utf-8')
-        print(message, file=sys.stderr)
+        print(red_color + "There was an error when executing 'vagrant ssh-config'. See the output below.\n" + end_color,
+              file=sys.stderr)
+        print(red_color + message + end_color, file=sys.stderr)
         exit(c.returncode)
     except OSError as oe:
-        print("There was an error when executing the vagrant ssh-config. Verify that vagrant is correctly installed.",
-              file=sys.stderr)
+        error = "Error: Verify that vagrant is correctly installed. "
+        print(red_color + error + end_color, file=sys.stderr)
         exit(oe.errno)
 
 
@@ -66,14 +72,14 @@ def parse_ssh_config(filename=DEFAULT_SSH_CONF):
     return parser.config_data
 
 
-def write_ansible_hosts(parsed_config, filename):
+def write_ansible_hosts(parsed_config, dest_filename):
     """
     Write ansible hosts
-    :param filename:
-    :param parsed_config:
+    :param dest_filename: the filename to write the inventory
+    :param parsed_config: the ssh config parsed by stormssh
     :return:
     """
-    with open(filename, "w") as f:
+    with open(dest_filename, "w") as f:
         for host in parsed_config:
             host_line_format = "{host} ansible_host={hostname} ansible_user={user} ansible_ssh_common_args='-o StrictHostKeyChecking=no' " \
                                "ansible_ssh_private_key_file={private_file} ansible_port={ssh_port} \n".format(
@@ -96,7 +102,7 @@ def cli():
     parser.add_argument("-v", "--version", dest="version", action="store_true", help="Print version and exits")
 
     parser.add_argument("hosts_filename", nargs="?", default=DEFAULT_HOSTS_FILE,
-                        help="The inventory file name to write hosts to.")
+                        help="The inventory file name to write hosts to. Default: " + DEFAULT_HOSTS_FILE)
 
     args = parser.parse_args()
 
