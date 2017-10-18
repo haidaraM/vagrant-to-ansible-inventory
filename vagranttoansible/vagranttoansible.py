@@ -41,12 +41,12 @@ def get_vagrant_ssh_config(verbose=False):
         return config_str
     except subprocess.CalledProcessError as c:
         message = c.output.decode('utf-8')
-        print(red_color + "There was an error when executing 'vagrant ssh-config'. See the output below.\n" + end_color,
+        print(red_color + "[ERROR]: There was an error when executing 'vagrant ssh-config'. See the output below.\n" + end_color,
               file=sys.stderr)
         print(red_color + message + end_color, file=sys.stderr)
         exit(c.returncode)
     except OSError as oe:
-        error = "Error: Verify that vagrant is correctly installed. "
+        error = "[ERROR]: Verify that vagrant is correctly installed. "
         print(red_color + error + end_color, file=sys.stderr)
         exit(oe.errno)
 
