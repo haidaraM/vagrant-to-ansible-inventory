@@ -17,7 +17,8 @@ from storm.parsers.ssh_config_parser import ConfigParser
 
 __version__ = "0.1.0"
 
-DEFAULT_SSH_CONF = ".vagrant-ssh-config"
+# temporary file to store the ssh configuration
+TMP_SSH_CONF_FILE_NAME = ".vagrant-ssh-config"
 DEFAULT_HOSTS_FILE = "hosts"
 
 red_color = "\033[91m"
@@ -41,8 +42,9 @@ def get_vagrant_ssh_config(verbose=False):
         return config_str
     except subprocess.CalledProcessError as c:
         message = c.output.decode('utf-8')
-        print(red_color + "[ERROR]: There was an error when executing 'vagrant ssh-config'. See the output below.\n" + end_color,
-              file=sys.stderr)
+        print(
+            red_color + "[ERROR]: There was an error when executing 'vagrant ssh-config'. See the output below.\n" + end_color,
+            file=sys.stderr)
         print(red_color + message + end_color, file=sys.stderr)
         exit(c.returncode)
     except OSError as oe:
@@ -51,7 +53,7 @@ def get_vagrant_ssh_config(verbose=False):
         exit(oe.errno)
 
 
-def write_ssh_config(ssh_config, filename=DEFAULT_SSH_CONF, verbose=False):
+def write_ssh_config(ssh_config, filename=TMP_SSH_CONF_FILE_NAME, verbose=False):
     """
     Write the ssh config in the given file name
     :param verbose:
@@ -63,7 +65,7 @@ def write_ssh_config(ssh_config, filename=DEFAULT_SSH_CONF, verbose=False):
         f.write(ssh_config)
 
 
-def parse_ssh_config(filename=DEFAULT_SSH_CONF, verbose=False):
+def parse_ssh_config(filename=TMP_SSH_CONF_FILE_NAME, verbose=False):
     """
     Parse the ssh config and return it as list of hosts (dict)
     :param verbose:
@@ -120,6 +122,11 @@ def main(hosts_filename, verbose=False):
     config = parse_ssh_config(verbose=verbose)
 
     write_ansible_inventory(config, hosts_filename, verbose=verbose)
+
+    try:
+        os.remove(TMP_SSH_CONF_FILE_NAME)
+    except FileNotFoundError:
+        pass
 
 
 def cli():
