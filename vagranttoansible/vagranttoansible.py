@@ -26,9 +26,10 @@ orange_color = "\033[93m"
 end_color = "\033[0m"
 
 
-def get_vagrant_ssh_config():
+def get_vagrant_ssh_config(verbose=False):
     """
     Get the output of the command 'vagrant ssh-config' as a str
+    :param verbose:
     :return:
     """
     try:
@@ -50,9 +51,10 @@ def get_vagrant_ssh_config():
         exit(oe.errno)
 
 
-def write_ssh_config(ssh_config, filename=DEFAULT_SSH_CONF):
+def write_ssh_config(ssh_config, filename=DEFAULT_SSH_CONF, verbose=False):
     """
     Write the ssh config in the given file name
+    :param verbose:
     :param filename:
     :param ssh_config: str representing the ssh config
     :return:
@@ -61,9 +63,10 @@ def write_ssh_config(ssh_config, filename=DEFAULT_SSH_CONF):
         f.write(ssh_config)
 
 
-def parse_ssh_config(filename=DEFAULT_SSH_CONF):
+def parse_ssh_config(filename=DEFAULT_SSH_CONF, verbose=False):
     """
     Parse the ssh config and return it as list of hosts (dict)
+    :param verbose:
     :param filename:
     :return: the ssh conf parsed
 
@@ -73,14 +76,18 @@ def parse_ssh_config(filename=DEFAULT_SSH_CONF):
     return parser.config_data
 
 
-def write_ansible_hosts(parsed_config, dest_filename):
+def write_ansible_hosts(parsed_config, dest_filename, verbose=False):
     """
     Write ansible hosts
+    :param verbose:
     :param dest_filename: the filename to write the inventory
     :param parsed_config: the ssh config parsed by stormssh
     :return:
     """
     with open(dest_filename, "w") as f:
+
+        if verbose:
+            print(green_color + "[INFO] Reading the parsed ssh conf..." + end_color)
 
         for host in parsed_config:
             try:
@@ -88,27 +95,30 @@ def write_ansible_hosts(parsed_config, dest_filename):
                                    "ansible_ssh_private_key_file={private_file} ansible_port={ssh_port} \n".format(
                     host=host['host'], hostname=host['options']['hostname'], user=host['options']['user'],
                     ssh_port=host['options']['port'], private_file=host['options']['identityfile'][0])
+                if verbose:
+                    print(green_color + "[INFO] Writing line : {}".format(host_line_format) + end_color)
 
                 f.write(host_line_format)
             except KeyError as ke:
-                error = orange_color + '[WARNING] Could not find the key {} in the ssh config when writing to the inventory. Skipping...'.format(
-                    ke) + end_color
-                print(error, file=sys.stderr)
-                pass
+                if verbose:
+                    error = orange_color + '[WARNING] Could not find the key {} in the ssh config when writing to the inventory. Skipping...'.format(
+                        ke) + end_color
+                    print(error, file=sys.stderr)
 
 
-def main(hosts_filename):
-    write_ssh_config(get_vagrant_ssh_config())
+def main(hosts_filename, verbose=False):
+    write_ssh_config(get_vagrant_ssh_config(), verbose=verbose)
 
-    config = parse_ssh_config()
+    config = parse_ssh_config(verbose=verbose)
 
-    write_ansible_hosts(config, hosts_filename)
+    write_ansible_hosts(config, hosts_filename, verbose=verbose)
 
 
 def cli():
     parser = argparse.ArgumentParser(description=__doc__)
 
-    parser.add_argument("-v", "--version", dest="version", action="store_true", help="Print version and exits")
+    parser.add_argument("-V", "--version", dest="version", action="store_true", help="Print version and exits")
+    parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="Print more information")
 
     parser.add_argument("hosts_filename", nargs="?", default=DEFAULT_HOSTS_FILE,
                         help="The inventory file name to write hosts to. Default: " + DEFAULT_HOSTS_FILE)
@@ -118,7 +128,7 @@ def cli():
     if args.version:
         print(__version__)
     else:
-        main(args.hosts_filename)
+        main(args.hosts_filename, verbose=args.verbose)
 
 
 if __name__ == "__main__":
