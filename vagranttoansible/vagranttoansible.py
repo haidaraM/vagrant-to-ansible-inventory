@@ -76,15 +76,17 @@ def parse_ssh_config(filename=DEFAULT_SSH_CONF, verbose=False):
     return parser.config_data
 
 
-def write_ansible_hosts(parsed_config, dest_filename, verbose=False):
+def write_ansible_inventory(parsed_config, dest_filename, verbose=False):
     """
-    Write ansible hosts
+    Write ansible inventory
     :param verbose:
     :param dest_filename: the filename to write the inventory
     :param parsed_config: the ssh config parsed by stormssh
     :return:
     """
     with open(dest_filename, "w") as f:
+
+        counter = 0
 
         if verbose:
             print(green_color + "[INFO] Reading the parsed ssh conf..." + end_color)
@@ -96,14 +98,20 @@ def write_ansible_hosts(parsed_config, dest_filename, verbose=False):
                     host=host['host'], hostname=host['options']['hostname'], user=host['options']['user'],
                     ssh_port=host['options']['port'], private_file=host['options']['identityfile'][0])
                 if verbose:
-                    print(green_color + "[INFO] Writing line : {}".format(host_line_format) + end_color)
+                    print(green_color + "[INFO] Writing host : {}".format(host_line_format) + end_color)
 
                 f.write(host_line_format)
+
+                counter += 1
             except KeyError as ke:
                 if verbose:
                     error = orange_color + '[WARNING] Could not find the key {} in the ssh config when writing to the inventory. Skipping...'.format(
                         ke) + end_color
                     print(error, file=sys.stderr)
+
+    if verbose:
+        print(green_color + "[INFO] {} host(s) has been successfully writen to '{}'".format(counter,
+                                                                                            dest_filename) + end_color)
 
 
 def main(hosts_filename, verbose=False):
@@ -111,7 +119,7 @@ def main(hosts_filename, verbose=False):
 
     config = parse_ssh_config(verbose=verbose)
 
-    write_ansible_hosts(config, hosts_filename, verbose=verbose)
+    write_ansible_inventory(config, hosts_filename, verbose=verbose)
 
 
 def cli():
