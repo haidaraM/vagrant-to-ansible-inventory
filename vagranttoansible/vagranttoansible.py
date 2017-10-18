@@ -22,6 +22,7 @@ DEFAULT_HOSTS_FILE = "hosts"
 
 red_color = "\033[91m"
 green_color = "\033[92m"
+orange_color = "\033[93m"
 end_color = "\033[0m"
 
 
@@ -80,12 +81,20 @@ def write_ansible_hosts(parsed_config, dest_filename):
     :return:
     """
     with open(dest_filename, "w") as f:
+
         for host in parsed_config:
-            host_line_format = "{host} ansible_host={hostname} ansible_user={user} ansible_ssh_common_args='-o StrictHostKeyChecking=no' " \
-                               "ansible_ssh_private_key_file={private_file} ansible_port={ssh_port} \n".format(
-                host=host['host'], hostname=host['options']['hostname'], user=host['options']['user'],
-                ssh_port=host['options']['port'], private_file=host['options']['identityfile'][0])
-            f.write(host_line_format)
+            try:
+                host_line_format = "{host} ansible_host={hostname} ansible_user={user} ansible_ssh_extra_args='-o StrictHostKeyChecking=no' " \
+                                   "ansible_ssh_private_key_file={private_file} ansible_port={ssh_port} \n".format(
+                    host=host['host'], hostname=host['options']['hostname'], user=host['options']['user'],
+                    ssh_port=host['options']['port'], private_file=host['options']['identityfile'][0])
+
+                f.write(host_line_format)
+            except KeyError as ke:
+                error = orange_color + '[WARNING] Could not find the key {} in the ssh config when writing to the inventory. Skipping...'.format(
+                    ke) + end_color
+                print(error, file=sys.stderr)
+                pass
 
 
 def main(hosts_filename):
