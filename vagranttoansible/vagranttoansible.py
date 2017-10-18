@@ -15,7 +15,7 @@ import os
 import argparse
 from storm.parsers.ssh_config_parser import ConfigParser
 
-__version__ = "0.0.2"
+__version__ = "0.1.0"
 
 DEFAULT_SSH_CONF = ".vagrant-ssh-config"
 DEFAULT_HOSTS_FILE = "hosts"
