@@ -15,7 +15,7 @@ import os
 import argparse
 from storm.parsers.ssh_config_parser import ConfigParser
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 # temporary file to store the ssh configuration
 TMP_SSH_CONF_FILE_NAME = ".vagrant-ssh-config"
@@ -95,8 +95,9 @@ def write_ansible_inventory(parsed_config, dest_filename, verbose=False):
 
         for host in parsed_config:
             try:
-                host_line_format = "{host} ansible_host={hostname} ansible_user={user} ansible_ssh_extra_args='-o StrictHostKeyChecking=no' " \
-                                   "ansible_ssh_private_key_file={private_file} ansible_port={ssh_port} \n".format(
+                # we use the old variables ansible_ssh_user, ansible_ssh_host and ansible_ssh_port to support Ansible < 2.0
+                host_line_format = "{host} ansible_ssh_host={hostname} ansible_ssh_user={user} ansible_ssh_common_args='-o StrictHostKeyChecking=no' " \
+                                   "ansible_ssh_private_key_file={private_file} ansible_ssh_port={ssh_port} \n".format(
                     host=host['host'], hostname=host['options']['hostname'], user=host['options']['user'],
                     ssh_port=host['options']['port'], private_file=host['options']['identityfile'][0])
                 if verbose:
