@@ -15,7 +15,7 @@ import os
 import argparse
 from storm.parsers.ssh_config_parser import ConfigParser
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 # temporary file to store the ssh configuration
 TMP_SSH_CONF_FILE_NAME = ".vagrant-ssh-config"
@@ -133,7 +133,8 @@ def main(hosts_filename, verbose=False):
 def cli():
     parser = argparse.ArgumentParser(description=__doc__)
 
-    parser.add_argument("-V", "--version", dest="version", action="store_true", help="Print version and exits")
+    parser.add_argument("-V", "--version", dest="version", action="version", version='%(prog)s ' + __version__,
+                        help="Print version and exits")
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="Print more information")
 
     parser.add_argument("hosts_filename", nargs="?", default=DEFAULT_HOSTS_FILE,
@@ -141,10 +142,7 @@ def cli():
 
     args = parser.parse_args()
 
-    if args.version:
-        print(__version__)
-    else:
-        main(args.hosts_filename, verbose=args.verbose)
+    main(args.hosts_filename, verbose=args.verbose)
 
 
 if __name__ == "__main__":
