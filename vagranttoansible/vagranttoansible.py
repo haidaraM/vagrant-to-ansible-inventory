@@ -150,7 +150,7 @@ def main(hosts_filename, verbose=False):
 
 
 def cli():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__, prog="vagranttoansible")
 
     parser.add_argument("-V", "--version", dest="version", action="version", version='%(prog)s ' + __version__,
                         help="Print version and exits")
