@@ -15,7 +15,7 @@ import os
 import argparse
 from storm.parsers.ssh_config_parser import ConfigParser
 
-__version__ = "0.1.2"
+__version__ = "1.0.0"
 
 # temporary file to store the ssh configuration
 TMP_SSH_CONF_FILE_NAME = ".vagrant-ssh-config"
