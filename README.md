@@ -13,12 +13,12 @@ The script has been tested with **Vagrant 2.0** but it should work with earlier 
 ## Installation
 
 ```bash
-pip install vagranttoansible
+$ pip install vagranttoansible
 ```
 
 ## Example
 ```bash
-vagranttoansible
+$ vagranttoansible
 ```
 
 This configuration:
@@ -49,6 +49,22 @@ will be
 machine1 ansible_host=127.0.0.1 ansible_user=vagrant ansible_ssh_common_args='-o StrictHostKeyChecking=no' ansible_ssh_private_key_file=/home/mha-dw/Projets/ansible/.vagrant/machines/machine1/virtualbox/private_key ansible_port=2222 
 machine2 ansible_host=127.0.0.1 ansible_user=vagrant ansible_ssh_common_args='-o StrictHostKeyChecking=no' ansible_ssh_private_key_file=/home/mha-dw/Projets/ansible/.vagrant/machines/machine2/virtualbox/private_key ansible_port=2200
 ```
+
+```bash
+$ vagranttoansible --help
+usage: vagranttoansible [-h] [-V] [-v] [-o OUTPUT_FILE_NAME]
+
+Simple script to transform 'vagrant ssh-config' output to an inventory hosts
+for Ansible. This script must be run in your vagrant folder.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -V, --version         Print version and exits
+  -v, --verbose         Print more information
+  -o OUTPUT_FILE_NAME, --output-file-name OUTPUT_FILE_NAME
+                        The inventory file name to write hosts to. Default: stdout
+```
+
 
 ## TODO
  - Maybe remove the stormssh dependency
