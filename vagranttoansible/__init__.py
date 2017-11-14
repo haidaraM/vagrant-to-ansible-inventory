@@ -1,1 +1,1 @@
-from vagranttoansible.vagranttoansible import write_ssh_config_to_file
+from vagranttoansible.vagranttoansible import write_ssh_config_to_file, cli, __version__

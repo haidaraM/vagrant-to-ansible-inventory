@@ -149,12 +149,7 @@ def main(hosts_filename, verbose=False):
         pass
 
 
-def cli(args=None):
-    """
-    Main entry point of the program
-    :param args: Command line arguments (sys.argv[1:])
-    :return:
-    """
+def _parse_args(command_line_args):
     parser = argparse.ArgumentParser(description=__doc__, prog="vagranttoansible")
 
     parser.add_argument("-V", "--version", dest="version", action="version", version='%(prog)s ' + __version__,
@@ -164,7 +159,17 @@ def cli(args=None):
     parser.add_argument("-o", "--output-file-name", dest="output_file_name", default=DEFAULT_OUTPUT,
                         help="The inventory file name to write hosts to. Default: " + DEFAULT_OUTPUT)
 
-    args = parser.parse_args(args)
+    return parser.parse_args(command_line_args)
+
+
+def cli(command_line_args=None):
+    """
+    Main entry point of the program
+    :param command_line_args: Command line arguments (sys.argv[1:])
+    :return:
+    """
+
+    args = _parse_args(command_line_args)
 
     main(args.output_file_name, verbose=args.verbose)
 
