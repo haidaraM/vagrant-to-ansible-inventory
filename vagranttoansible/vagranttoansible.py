@@ -21,6 +21,9 @@ __version__ = "0.1.2"
 TMP_SSH_CONF_FILE_NAME = ".vagrant-ssh-config"
 DEFAULT_OUTPUT = "stdout"
 
+DEFAULT_LINE_FORMAT = "{host} ansible_ssh_host={ssh_hostname} ansible_ssh_user={user} ansible_ssh_common_args='-o StrictHostKeyChecking=no' " \
+                      "ansible_ssh_private_key_file={private_file} ansible_ssh_port={ssh_port}"
+
 red_color = "\033[91m"
 green_color = "\033[92m"
 orange_color = "\033[93m"
@@ -94,13 +97,18 @@ def write_ansible_inventory(parsed_config, output_file_name, verbose=False):
     if verbose:
         print(green_color + "[INFO] Reading the parsed ssh conf..." + end_color)
 
-    for host in parsed_config:
+    for host_config in parsed_config:
         try:
+
+            ssh_host = host_config['host']
+            port = host_config['options']['port']
+            user = host_config['options']['user']
+            ssh_hostname = host_config['options']['hostname']
+            identityfile = host_config['options']['identityfile'][0]
+
             # we use the old variables ansible_ssh_user, ansible_ssh_host and ansible_ssh_port to support Ansible < 2.0
-            host_line_format = "{host} ansible_ssh_host={hostname} ansible_ssh_user={user} ansible_ssh_common_args='-o StrictHostKeyChecking=no' " \
-                               "ansible_ssh_private_key_file={private_file} ansible_ssh_port={ssh_port}".format(
-                host=host['host'], hostname=host['options']['hostname'], user=host['options']['user'],
-                ssh_port=host['options']['port'], private_file=host['options']['identityfile'][0])
+            host_line_format = DEFAULT_LINE_FORMAT.format(host=ssh_host, ssh_hostname=ssh_hostname, user=user,
+                                                          ssh_port=port, private_file=identityfile)
             if verbose:
                 print(green_color + "[INFO] Writing host : {}".format(host_line_format) + end_color)
 
@@ -117,8 +125,8 @@ def write_ansible_inventory(parsed_config, output_file_name, verbose=False):
         print("\n".join(hosts_list))
     else:
         with open(output_file_name, "w") as f:
-            for host in hosts_list:
-                f.write(host)
+            for ansible_inventory_line in hosts_list:
+                f.write(ansible_inventory_line)
                 f.write("\n")
 
     if verbose:
