@@ -21,7 +21,7 @@ __version__ = "0.1.2"
 TMP_SSH_CONF_FILE_NAME = ".vagrant-ssh-config"
 DEFAULT_OUTPUT = "stdout"
 
-DEFAULT_LINE_FORMAT = "{host} ansible_ssh_host={ssh_hostname} ansible_ssh_user={user} ansible_ssh_common_args='-o StrictHostKeyChecking=no' " \
+DEFAULT_LINE_FORMAT = "{host} ansible_ssh_host={ssh_hostname} ansible_ssh_user={user} ansible_ssh_common_args='-o StrictHostKeyChecking={stricthostkeychecking}' " \
                       "ansible_ssh_private_key_file={private_file} ansible_ssh_port={ssh_port}"
 
 red_color = "\033[91m"
@@ -105,10 +105,12 @@ def write_ansible_inventory(parsed_config, output_file_name, verbose=False):
             user = host_config['options']['user']
             ssh_hostname = host_config['options']['hostname']
             identityfile = host_config['options']['identityfile'][0]
+            strict_host_keychecking = host_config['options']['stricthostkeychecking']
 
             # we use the old variables ansible_ssh_user, ansible_ssh_host and ansible_ssh_port to support Ansible < 2.0
             host_line_format = DEFAULT_LINE_FORMAT.format(host=ssh_host, ssh_hostname=ssh_hostname, user=user,
-                                                          ssh_port=port, private_file=identityfile)
+                                                          ssh_port=port, private_file=identityfile,
+                                                          stricthostkeychecking=strict_host_keychecking)
             if verbose:
                 print(green_color + "[INFO] Writing host : {}".format(host_line_format) + end_color)
 

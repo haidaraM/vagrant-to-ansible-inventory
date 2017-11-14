@@ -50,11 +50,7 @@ machine1 ansible_host=127.0.0.1 ansible_user=vagrant ansible_ssh_common_args='-o
 machine2 ansible_host=127.0.0.1 ansible_user=vagrant ansible_ssh_common_args='-o StrictHostKeyChecking=no' ansible_ssh_private_key_file=/home/mha-dw/Projets/ansible/.vagrant/machines/machine2/virtualbox/private_key ansible_port=2200
 ```
 
-**Note that for the moment StrictHostKeyChecking is allays at no in the inventory file.**
-
 ## TODO
-
- - Add some options
  - Maybe remove the stormssh dependency
  - Test with different Vagrant environments 
 
