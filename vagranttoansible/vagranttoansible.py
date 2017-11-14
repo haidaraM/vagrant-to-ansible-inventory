@@ -56,9 +56,9 @@ def get_vagrant_ssh_config(verbose=False):
         exit(oe.errno)
 
 
-def write_ssh_config(ssh_config, filename=TMP_SSH_CONF_FILE_NAME, verbose=False):
+def write_ssh_config_to_file(ssh_config, filename=TMP_SSH_CONF_FILE_NAME, verbose=False):
     """
-    Write the ssh config in the given file name
+    Write the ssh config in the given filename
     :param verbose:
     :param filename:
     :param ssh_config: str representing the ssh config
@@ -137,7 +137,7 @@ def write_ansible_inventory(parsed_config, output_file_name, verbose=False):
 
 
 def main(hosts_filename, verbose=False):
-    write_ssh_config(get_vagrant_ssh_config(), verbose=verbose)
+    write_ssh_config_to_file(get_vagrant_ssh_config(), verbose=verbose)
 
     config = parse_ssh_config(verbose=verbose)
 
