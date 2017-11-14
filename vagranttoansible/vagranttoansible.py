@@ -19,7 +19,7 @@ __version__ = "0.1.2"
 
 # temporary file to store the ssh configuration
 TMP_SSH_CONF_FILE_NAME = ".vagrant-ssh-config"
-DEFAULT_HOSTS_FILE = "hosts"
+DEFAULT_OUTPUT = "stdout"
 
 red_color = "\033[91m"
 green_color = "\033[92m"
@@ -78,43 +78,52 @@ def parse_ssh_config(filename=TMP_SSH_CONF_FILE_NAME, verbose=False):
     return parser.config_data
 
 
-def write_ansible_inventory(parsed_config, dest_filename, verbose=False):
+def write_ansible_inventory(parsed_config, output_file_name, verbose=False):
     """
     Write ansible inventory
     :param verbose:
-    :param dest_filename: the filename to write the inventory
+    :param output_file_name: the filename to write the inventory
     :param parsed_config: the ssh config parsed by stormssh
     :return:
     """
-    with open(dest_filename, "w") as f:
 
-        counter = 0
+    hosts_list = []
 
-        if verbose:
-            print(green_color + "[INFO] Reading the parsed ssh conf..." + end_color)
+    counter = 0
 
-        for host in parsed_config:
-            try:
-                # we use the old variables ansible_ssh_user, ansible_ssh_host and ansible_ssh_port to support Ansible < 2.0
-                host_line_format = "{host} ansible_ssh_host={hostname} ansible_ssh_user={user} ansible_ssh_common_args='-o StrictHostKeyChecking=no' " \
-                                   "ansible_ssh_private_key_file={private_file} ansible_ssh_port={ssh_port} \n".format(
-                    host=host['host'], hostname=host['options']['hostname'], user=host['options']['user'],
-                    ssh_port=host['options']['port'], private_file=host['options']['identityfile'][0])
-                if verbose:
-                    print(green_color + "[INFO] Writing host : {}".format(host_line_format) + end_color)
+    if verbose:
+        print(green_color + "[INFO] Reading the parsed ssh conf..." + end_color)
 
-                f.write(host_line_format)
+    for host in parsed_config:
+        try:
+            # we use the old variables ansible_ssh_user, ansible_ssh_host and ansible_ssh_port to support Ansible < 2.0
+            host_line_format = "{host} ansible_ssh_host={hostname} ansible_ssh_user={user} ansible_ssh_common_args='-o StrictHostKeyChecking=no' " \
+                               "ansible_ssh_private_key_file={private_file} ansible_ssh_port={ssh_port}".format(
+                host=host['host'], hostname=host['options']['hostname'], user=host['options']['user'],
+                ssh_port=host['options']['port'], private_file=host['options']['identityfile'][0])
+            if verbose:
+                print(green_color + "[INFO] Writing host : {}".format(host_line_format) + end_color)
 
-                counter += 1
-            except KeyError as ke:
-                if verbose:
-                    error = orange_color + '[WARNING] Could not find the key {} in the ssh config when writing to the inventory. Skipping...'.format(
-                        ke) + end_color
-                    print(error, file=sys.stderr)
+            hosts_list.append(host_line_format)
+
+            counter += 1
+        except KeyError as ke:
+            if verbose:
+                error = orange_color + '[WARNING] Could not find the key {} in the ssh config when writing to the inventory. Skipping...'.format(
+                    ke) + end_color
+                print(error, file=sys.stderr)
+
+    if output_file_name == DEFAULT_OUTPUT:
+        print("\n".join(hosts_list))
+    else:
+        with open(output_file_name, "w") as f:
+            for host in hosts_list:
+                f.write(host)
+                f.write("\n")
 
     if verbose:
         print(green_color + "[INFO] {} host(s) has been successfully writen to '{}'".format(counter,
-                                                                                            dest_filename) + end_color)
+                                                                                            output_file_name) + end_color)
 
 
 def main(hosts_filename, verbose=False):
@@ -137,12 +146,12 @@ def cli():
                         help="Print version and exits")
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="Print more information")
 
-    parser.add_argument("hosts_filename", nargs="?", default=DEFAULT_HOSTS_FILE,
-                        help="The inventory file name to write hosts to. Default: " + DEFAULT_HOSTS_FILE)
+    parser.add_argument("-o", "--output-file-name", dest="output_file_name", default=DEFAULT_OUTPUT,
+                        help="The inventory file name to write hosts to. Default: " + DEFAULT_OUTPUT)
 
     args = parser.parse_args()
 
-    main(args.hosts_filename, verbose=args.verbose)
+    main(args.output_file_name, verbose=args.verbose)
 
 
 if __name__ == "__main__":
