@@ -1,7 +1,8 @@
 import pytest
+import sys
 
-from vagranttoansible import write_ssh_config_to_file, parse_ssh_config, write_ansible_inventory, __version__
-from vagranttoansible.vagranttoansible import get_args
+from vagranttoansible.vagranttoansible import write_ssh_config_to_file, parse_ssh_config, write_ansible_inventory, \
+    __version__, get_args
 
 FIXTURES_DIR = 'tests/fixtures/'
 
@@ -29,8 +30,13 @@ def test_parse_args_version(capfd):
         get_args(['-V'])
 
     out, err = capfd.readouterr()
-    assert out == "vagranttoansible %s\n" % __version__
-    assert err == ''
+    # https://bugs.python.org/issue18920
+    if sys.version_info >= (3, 4):
+        assert out == "vagranttoansible %s\n" % __version__
+        assert err == ''
+    else:
+        assert err == "vagranttoansible %s\n" % __version__
+        assert out == ''
 
 
 def test_parse_args_error(capfd):
