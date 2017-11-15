@@ -56,9 +56,9 @@ def get_vagrant_ssh_config(verbose=False):
         exit(oe.errno)
 
 
-def write_ssh_config(ssh_config, filename=TMP_SSH_CONF_FILE_NAME, verbose=False):
+def write_ssh_config_to_file(ssh_config, filename=TMP_SSH_CONF_FILE_NAME, verbose=False):
     """
-    Write the ssh config in the given file name
+    Write the ssh config in the given filename
     :param verbose:
     :param filename:
     :param ssh_config: str representing the ssh config
@@ -81,7 +81,7 @@ def parse_ssh_config(filename=TMP_SSH_CONF_FILE_NAME, verbose=False):
     return parser.config_data
 
 
-def write_ansible_inventory(parsed_config, output_file_name, verbose=False):
+def write_ansible_inventory(parsed_config, output_file_name=DEFAULT_OUTPUT, verbose=False):
     """
     Write ansible inventory
     :param verbose:
@@ -137,7 +137,7 @@ def write_ansible_inventory(parsed_config, output_file_name, verbose=False):
 
 
 def main(hosts_filename, verbose=False):
-    write_ssh_config(get_vagrant_ssh_config(), verbose=verbose)
+    write_ssh_config_to_file(get_vagrant_ssh_config(), verbose=verbose)
 
     config = parse_ssh_config(verbose=verbose)
 
@@ -149,7 +149,7 @@ def main(hosts_filename, verbose=False):
         pass
 
 
-def cli():
+def get_args(command_line_args):
     parser = argparse.ArgumentParser(description=__doc__, prog="vagranttoansible")
 
     parser.add_argument("-V", "--version", dest="version", action="version", version='%(prog)s ' + __version__,
@@ -159,7 +159,17 @@ def cli():
     parser.add_argument("-o", "--output-file-name", dest="output_file_name", default=DEFAULT_OUTPUT,
                         help="The inventory file name to write hosts to. Default: " + DEFAULT_OUTPUT)
 
-    args = parser.parse_args()
+    return parser.parse_args(command_line_args)
+
+
+def cli(command_line_args=None):
+    """
+    Main entry point of the program
+    :param command_line_args: Command line arguments (sys.argv[1:])
+    :return:
+    """
+
+    args = get_args(command_line_args)
 
     main(args.output_file_name, verbose=args.verbose)
 
