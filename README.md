@@ -1,6 +1,7 @@
 # Vagant to Ansible inventory
 
 [![Build Status](https://travis-ci.org/haidaraM/vagranttoansibleinventory.svg?branch=master)](https://travis-ci.org/haidaraM/vagranttoansibleinventory)
+[![PyPI version](https://badge.fury.io/py/vagranttoansible.svg)](https://badge.fury.io/py/vagranttoansible)
 
 A simple library to convert `vagrant ssh-config` to an inventory file for Ansible.
 
