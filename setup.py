@@ -15,6 +15,7 @@ setup(name="vagranttoansible",
       author_email="elmhaidara@gmail.com",
       license="MIT",
       install_requires=['stormssh'],
+      tests_requires=['pytest'],
       packages=find_packages(exclude=['tests']),
       download_url="https://github.com/haidaraM/vagranttoansibleinventory/archive/v" + __version__ + ".tar.gz",
       classifiers=[

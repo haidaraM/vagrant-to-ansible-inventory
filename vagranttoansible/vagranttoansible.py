@@ -81,7 +81,7 @@ def parse_ssh_config(filename=TMP_SSH_CONF_FILE_NAME, verbose=False):
     return parser.config_data
 
 
-def write_ansible_inventory(parsed_config, output_file_name, verbose=False):
+def write_ansible_inventory(parsed_config, output_file_name=DEFAULT_OUTPUT, verbose=False):
     """
     Write ansible inventory
     :param verbose:

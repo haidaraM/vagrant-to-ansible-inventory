@@ -1,8 +1,12 @@
-import os
 import pytest
 
-from vagranttoansible import write_ssh_config_to_file, parse_ssh_config, __version__
+from vagranttoansible import write_ssh_config_to_file, parse_ssh_config, write_ansible_inventory, __version__
 from vagranttoansible.vagranttoansible import get_args
+
+FIXTURES_DIR = 'tests/fixtures/'
+
+EMPTY_FILE = FIXTURES_DIR + 'ssh_config_empty_file'
+SIMPLE_FILE = FIXTURES_DIR + 'ssh_config_simple'
 
 
 def _read_file(filename):
@@ -41,19 +45,17 @@ def test_parse_args_error(capfd):
     assert out == ''
 
 
-def test_write_ssh_config_to_file():
+def test_write_ssh_config_to_file(tmpdir):
     """
     Should write ssh_config to a file
     :return:
     """
     ssh_config = 'Host machine3\n'
-    filename = 'test.test'
-    write_ssh_config_to_file(ssh_config, filename=filename)
+    filepath = tmpdir.join('test.test')
 
-    assert os.path.isfile(filename)
-    assert ssh_config == _read_file(filename)
+    write_ssh_config_to_file(ssh_config, filename=filepath.strpath)
 
-    os.remove(filename)
+    assert ssh_config == filepath.read()
 
 
 def test_parse_ssh_config_empty_file():
@@ -61,7 +63,7 @@ def test_parse_ssh_config_empty_file():
     Should property parse the ssh configuration with no item
     :return:
     """
-    filename = 'data/ssh_config_empty_file'
+    filename = EMPTY_FILE
 
     config_list = parse_ssh_config(filename)
 
@@ -73,7 +75,7 @@ def test_parse_ssh_config_simple():
     Should property parse the ssh configuration with only one item
     :return:
     """
-    filename = 'data/ssh_config_simple'
+    filename = SIMPLE_FILE
 
     config_list = parse_ssh_config(filename)
 
@@ -94,3 +96,23 @@ def test_parse_ssh_config_simple():
 
     assert config['options']['identitiesonly'] == 'yes'
     assert config['options']['loglevel'] == 'FATAL'
+
+
+def test_write_ansible_inventory_empty_file(capfd, tmpdir):
+    """
+    Should create an empty Ansible inventory file and should not print anything (only \n)
+    :param capfd:
+    :return:
+    """
+    config = parse_ssh_config(EMPTY_FILE)
+
+    # print to stdout
+    write_ansible_inventory(config)
+
+    out, err = capfd.readouterr()
+    assert out == '\n'
+
+    inventory = tmpdir.join("inventory")
+    write_ansible_inventory(config, output_file_name=inventory.strpath)
+
+    assert inventory.read() == ''
