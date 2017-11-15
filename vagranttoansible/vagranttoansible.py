@@ -149,7 +149,7 @@ def main(hosts_filename, verbose=False):
         pass
 
 
-def _parse_args(command_line_args):
+def get_args(command_line_args):
     parser = argparse.ArgumentParser(description=__doc__, prog="vagranttoansible")
 
     parser.add_argument("-V", "--version", dest="version", action="version", version='%(prog)s ' + __version__,
@@ -169,7 +169,7 @@ def cli(command_line_args=None):
     :return:
     """
 
-    args = _parse_args(command_line_args)
+    args = get_args(command_line_args)
 
     main(args.output_file_name, verbose=args.verbose)
 
