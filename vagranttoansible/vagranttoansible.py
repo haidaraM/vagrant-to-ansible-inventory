@@ -37,23 +37,22 @@ def get_vagrant_ssh_config(verbose=False):
     :return:
     """
     try:
-        output = subprocess.check_output(['vagrant', 'ssh-config'], stderr=subprocess.STDOUT)
+        p = subprocess.Popen(['vagrant', 'ssh-config'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        returncode = p.wait()
+        stdout = p.stdout.read().decode('utf-8')
+        stderr = p.stderr.read().decode('utf-8')
 
-        config_str = output.decode('utf-8')
+        if stdout == "":
+            print(red_color + stderr + end_color, file=sys.stderr)
+            sys.exit(returncode)
+
         # remove empty lines as they will be interpreted by the ConfigParser
-        config_str = os.linesep.join([s for s in config_str.splitlines() if s])
-        return config_str
-    except subprocess.CalledProcessError as c:
-        message = c.output.decode('utf-8')
-        print(
-            red_color + "[ERROR]: There was an error when executing 'vagrant ssh-config'. See the output below.\n" + end_color,
-            file=sys.stderr)
-        print(red_color + message + end_color, file=sys.stderr)
-        exit(c.returncode)
+        config = os.linesep.join([s for s in stdout.splitlines() if s])
+        return config
     except OSError as oe:
-        error = "[ERROR]: Verify that vagrant is correctly installed. "
+        error = "[ERROR]: Verify that vagrant is correctly installed. \n" + oe.strerror
         print(red_color + error + end_color, file=sys.stderr)
-        exit(oe.errno)
+        sys.exit(oe.errno)
 
 
 def write_ssh_config_to_file(ssh_config, filename=TMP_SSH_CONF_FILE_NAME, verbose=False):
