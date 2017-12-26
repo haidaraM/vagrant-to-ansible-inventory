@@ -2,7 +2,9 @@ from setuptools import setup, find_packages
 from vagranttoansible.vagranttoansible import __version__
 
 try:
-    long_description = open('README.md').read()
+    import pypandoc
+
+    long_description = pypandoc.convert_file('README.md', 'rst')
 except:
     long_description = None
 
